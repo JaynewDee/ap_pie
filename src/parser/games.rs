@@ -11,13 +11,13 @@ pub mod game_records {
         #[serde(rename = "Rank")]
         pub rank: Option<u16>,
         #[serde(rename = "Name")]
-        pub name: Option<String>,
+        name: Option<String>,
         #[serde(rename = "Platform")]
-        pub platform: Option<String>,
+        platform: Option<String>,
         #[serde(rename = "Year", default, deserialize_with = "csv::invalid_option")]
-        pub year: Option<u16>,
+        year: Option<u16>,
         #[serde(rename = "Genre")]
-        pub genre: Option<String>,
+        genre: Option<String>,
         #[serde(rename = "Publisher")]
         pub publisher: Option<String>,
         #[serde(rename = "NA_Sales")]
@@ -53,21 +53,19 @@ pub mod game_records {
 
     impl GameSort for HashMap<String, u16> {
         fn pub_count(&self, direction: &str) -> BTreeMap<u16, String> {
-            let mut pairs_vec: Vec<(String, u16)> = Vec::new();
-
-            let _ = self
-                .into_iter()
-                .map(|(k, v)| pairs_vec.push((k.to_owned(), *v)));
-
+            let mut pairs_vec: Vec<(&String, &u16)> = self.iter().fold(vec![], |mut acc, v| {
+                acc.push(v);
+                acc
+            });
             // Mutate in place
             pairs_vec.sort_by(|(_, v1), (_, v2)| v2.cmp(v1));
             pairs_vec.reverse();
 
-            let mut as_map: BTreeMap<u16, String> = BTreeMap::new();
-
-            let _ = pairs_vec
-                .drain(..)
-                .map(|(k, v)| as_map.insert(v, k.to_string()));
+            let as_map: BTreeMap<u16, String> =
+                pairs_vec.iter().fold(BTreeMap::new(), |mut acc, (k, v)| {
+                    acc.insert(**v, k.to_string());
+                    acc
+                });
 
             println!("{:#?}", as_map);
             as_map

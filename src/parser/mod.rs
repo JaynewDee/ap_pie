@@ -1,11 +1,13 @@
 #![allow(unused_variables, dead_code)]
 
 mod games;
+mod wind_power;
 
 use std::collections::HashMap;
 use std::fs::File;
 
 use crate::parser::games::game_records::{GameRecord, GameSort};
+use crate::parser::wind_power::us_production::{WindRecord, SimpleDate};
 
 type CsvReader = Option<csv::Reader<File>>;
 type CsvWriter = Option<csv::Writer<File>>;
@@ -23,7 +25,7 @@ impl ParserBuilder {
     fn new() -> Self {
         Self {
             parser: Parser {
-                csv_reader: None::<csv::Reader<File>>,
+                csv_reader: None,
                 csv_writer: None,
             },
         }
@@ -84,3 +86,34 @@ pub fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::e
 
     Ok(())
 }
+
+pub fn read_wind_power(path: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let parser = ParserBuilder::new().csv_reader(path).build();
+
+    for result in parser
+        .csv_reader
+        .expect("Failed to unwrap csv reader ...")
+        .deserialize()
+    {
+        let record: WindRecord = result?;
+
+        println!("{:#?}", record);
+        let simple_date = SimpleDate::from(record.date);
+    }
+
+    Ok(())
+}
+
+
+////
+////
+//////
+/////
+////
+////
+////
+////
+////
+////
+////
+////

@@ -8,8 +8,8 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     let args = parse_args()?;
 
-
-    game_sales_figures()?;
+    wind_power_production()?;
+//    game_sales_figures()?;
 
     Ok(())
 }

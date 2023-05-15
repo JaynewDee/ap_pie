@@ -1,90 +1,69 @@
-
+#![allow(unused_variables, dead_code)]
 
 mod games;
-use games::GameRecord;
-
-
 
 pub mod parser {
-    use std::collections::{BTreeMap, HashMap};
-    use std::io::File;
+    use std::collections::HashMap;
+    use std::fs::File;
 
-    struct Paths<'a> {
-        read: Option<&'a str>,
-        write: Option<&'a str>,
+    use super::games::game_records::{GameRecord, GameSort};
+
+    type CsvReader = Option<csv::Reader<File>>;
+    type CsvWriter = Option<csv::Writer<File>>;
+
+    struct Parser {
+        csv_reader: CsvReader,
+        csv_writer: CsvWriter,
     }
 
-    struct Parser<'a> {
-        paths: Paths<'a>,
-        csv_reader: csv::Reader<File>,
-        csv_writer: Option<csv::Writer<File>>,
+    pub struct ParserBuilder {
+        parser: Parser,
     }
 
-    pub struct ParserBuilder<'a> {
-        parser: Parser<'a>,
-    }
-
-    impl ParserBuilder<'_> {
+    impl ParserBuilder {
         fn new() -> Self {
             Self {
                 parser: Parser {
-                    paths: Paths {
-                        read: None,
-                        write: None,
-                    },
                     csv_reader: None::<csv::Reader<File>>,
                     csv_writer: None,
                 },
             }
         }
 
-        fn read_path(mut self, path: &str) -> Self {
-            self.parser.paths.read = Some(path);
+        fn csv_reader(mut self, path: &str) -> Self {
+            self.parser.csv_reader = Some(csv::Reader::from_reader(File::open(path).unwrap()));
             self
         }
 
-        fn write_path(mut self, path: &str) -> Self {
-            self.parser.paths.write = Some(path);
+        fn csv_writer(mut self, path: &str) -> Self {
+            self.parser.csv_writer = Some(csv::Writer::from_path(path).unwrap());
             self
         }
 
-        fn csv_reader(mut self) -> Self {
-           
-                
-            
-            self.parser.csv_reader = csv::Reader::from_reader(File::open(self.parser.paths.read).unwrap());
-            self
-        }
-
-        fn csv_writer(mut self) -> Self {
-            self.parser.csv_writer = Some("");
-            self
-        }
-
-        fn build(self) -> Parser<'static> {
+        fn build(self) -> Parser {
             self.parser
         }
     }
 
-    impl Default for Parser<'_> {
+    impl Default for Parser {
         fn default() -> Self {
             Self {
-                paths: Paths {
-                    read: Some("./input"),
-                    write: Some("./output"),
-                },
-                csv_reader: None::<csv::Reader<File>>, 
+                csv_reader: None::<csv::Reader<File>>,
                 csv_writer: None,
             }
         }
     }
 
     pub fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::error::Error>> {
-        let mut parser = ParserBuilder::new().read_path(path).csv_reader().build();
+        let parser = ParserBuilder::new().csv_reader(path).build();
 
         let mut publisher_map: HashMap<String, u16> = HashMap::new();
 
-        for result in parser.csv_reader.deserialize() {
+        for result in parser
+            .csv_reader
+            .expect("Failed to unwrap csv reader ...")
+            .deserialize()
+        {
             let record: GameRecord = result?;
 
             if let Some(res) = record.publisher {

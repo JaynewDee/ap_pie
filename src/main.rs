@@ -1,39 +1,23 @@
+#![allow(unused_imports)]
+
+extern crate serde_json;
+
 mod cli;
 mod parser;
+mod server;
 
 use cli::parse_args;
-use parser::{read_game_sales, read_wind_power};
+use parser::{game_sales_figures, wind_power_production};
+use server::connection::{launch, Server};
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args = parse_args()?;
+    // let args = parse_args()?;
+    // println!("{:#?}", args);
+    // wind_power_production()?;
+    // game_sales_figures()?;
 
-    wind_power_production()?;
-//    game_sales_figures()?;
+    launch(Server::new())?;
 
     Ok(())
-}
-
-fn game_sales_figures() -> Result<(), Box<dyn Error>> {
-    let max_records = Some(100); // Control results length for prototyping
-
-    let vg_sales_path: &str = "./input/vgsales.csv";
-    //
-    if let Err(e) = read_game_sales(vg_sales_path, max_records.unwrap()) {
-        eprint!("Error reading csv @ {}", vg_sales_path);
-        Err(e)
-    } else {
-        Ok(())
-    }
-}
-
-fn wind_power_production() -> Result<(), Box<dyn Error>> {
-    let wind_power_path: &str = "./input/wind-power-production-us.csv";
-   
-    if let Err(e) = read_wind_power(wind_power_path) {
-        eprint!("Error reading csv @ {}", wind_power_path);
-        Err(e)
-    } else {
-        Ok(())
-    }
 }

@@ -5,7 +5,7 @@ mod wind_power;
 
 use std::collections::HashMap;
 use std::fs::File;
-
+use std::error::Error;
 use crate::parser::games::game_records::{GameRecord, GameSort};
 use crate::parser::wind_power::us_production::{WindRecord, SimpleDate};
 
@@ -55,7 +55,7 @@ impl Default for Parser {
     }
 }
 
-pub fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::error::Error>> {
+fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::error::Error>> {
     let parser = ParserBuilder::new().csv_reader(path).build();
 
     let mut publisher_map: HashMap<String, u16> = HashMap::new();
@@ -87,7 +87,7 @@ pub fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::e
     Ok(())
 }
 
-pub fn read_wind_power(path: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn read_wind_power(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let parser = ParserBuilder::new().csv_reader(path).build();
 
     for result in parser
@@ -104,16 +104,27 @@ pub fn read_wind_power(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+pub fn game_sales_figures() -> Result<(), Box<dyn Error>> {
+    let max_records = Some(100); // Control results length for prototyping
 
-////
-////
-//////
-/////
-////
-////
-////
-////
-////
-////
-////
-////
+    let vg_sales_path: &str = "./input/vgsales.csv";
+    //
+    if let Err(e) = read_game_sales(vg_sales_path, max_records.unwrap()) {
+        eprint!("Error reading csv @ {}", vg_sales_path);
+        Err(e)
+    } else {
+        Ok(())
+    }
+}
+
+pub fn wind_power_production() -> Result<(), Box<dyn Error>> {
+    let wind_power_path: &str = "./input/wind-power-production-us.csv";
+   
+    if let Err(e) = read_wind_power(wind_power_path) {
+        eprint!("Error reading csv @ {}", wind_power_path);
+        Err(e)
+    } else {
+        Ok(())
+    }
+}
+

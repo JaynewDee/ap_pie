@@ -255,7 +255,6 @@ dependencies = [
  "http-body-util",
  "hyper",
  "serde",
- "serde_json",
  "thiserror",
  "tokio",
 ]

@@ -3,10 +3,10 @@
 pub mod game_records {
     extern crate csv;
 
-    use serde::Deserialize;
+    use serde::{Deserialize, Serialize};
     use std::collections::{BTreeMap, HashMap};
 
-    #[derive(Debug, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize)]
     pub struct GameRecord {
         #[serde(rename = "Rank")]
         pub rank: Option<u16>,
@@ -45,7 +45,7 @@ pub mod game_records {
                 other_sales: None,
             }
         }
-    }
+    }   
 
     pub trait GameSort {
         fn pub_count(&self, sort_direction: &str) -> BTreeMap<u16, String>;

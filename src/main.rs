@@ -1,6 +1,5 @@
 #![allow(unused_imports)]
 
-extern crate serde_json;
 
 mod cli;
 mod parser;

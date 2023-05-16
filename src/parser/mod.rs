@@ -3,16 +3,16 @@
 mod games;
 mod wind_power;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 use std::fs::File;
 use std::error::Error;
-use crate::parser::games::game_records::{GameRecord, GameSort};
+pub use crate::parser::games::game_records::{GameRecord, GameSort};
 use crate::parser::wind_power::us_production::{WindRecord, SimpleDate};
 
 type CsvReader = Option<csv::Reader<File>>;
 type CsvWriter = Option<csv::Writer<File>>;
 
-struct Parser {
+pub struct Parser {
     csv_reader: CsvReader,
     csv_writer: CsvWriter,
 }
@@ -55,7 +55,21 @@ impl Default for Parser {
     }
 }
 
-fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::error::Error>> {
+pub fn all_game_data(path: &str) -> Result<Vec<GameRecord>, Box<dyn std::error::Error>> {
+    let parser = ParserBuilder::new().csv_reader(path).build();
+
+    let mut records: Vec<GameRecord> = vec![];
+
+    for result in parser.csv_reader.expect("Failed to unwrap csv reader ...").deserialize() {
+        let record: GameRecord = result?;
+
+        records.push(record);
+    };
+
+    Ok(records)
+}
+
+pub fn read_game_sales(path: &str, total_recs: u16) -> Result<BTreeMap<u16, String>, Box<dyn std::error::Error>> {
     let parser = ParserBuilder::new().csv_reader(path).build();
 
     let mut publisher_map: HashMap<String, u16> = HashMap::new();
@@ -82,9 +96,9 @@ fn read_game_sales(path: &str, total_recs: u16) -> Result<(), Box<dyn std::error
         }
     }
 
-    publisher_map.pub_count("desc");
+    let publish_sorted = publisher_map.pub_count("desc");
 
-    Ok(())
+    Ok(publish_sorted)
 }
 
 fn read_wind_power(path: &str) -> Result<(), Box<dyn std::error::Error>> {

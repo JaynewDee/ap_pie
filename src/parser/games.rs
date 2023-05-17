@@ -11,13 +11,13 @@ pub mod game_records {
         #[serde(rename = "Rank")]
         pub rank: Option<u16>,
         #[serde(rename = "Name")]
-        name: Option<String>,
+        pub name: Option<String>,
         #[serde(rename = "Platform")]
-        platform: Option<String>,
+        pub platform: Option<String>,
         #[serde(rename = "Year", default, deserialize_with = "csv::invalid_option")]
-        year: Option<u16>,
+        pub year: Option<u16>,
         #[serde(rename = "Genre")]
-        genre: Option<String>,
+        pub genre: Option<String>,
         #[serde(rename = "Publisher")]
         pub publisher: Option<String>,
         #[serde(rename = "NA_Sales")]

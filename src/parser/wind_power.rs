@@ -1,8 +1,8 @@
-pub mod us_production {
+pub mod wind_production {
     extern crate csv;
 
-    use serde::Deserialize;
-    use std::collections::{BTreeMap, HashMap};
+    use crate::parser::builder::ParserBuilder;
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Deserialize)]
     pub struct SimpleDate {
@@ -11,10 +11,10 @@ pub mod us_production {
         order: u16,
     }
 
-    #[derive(Debug, Deserialize)]
+    #[derive(Debug, Deserialize, Serialize)]
     pub struct WindRecord {
-        // Struct fields are private by default
         pub date: String,
+        pub wind_california: u16,
         pub wind_texas: u16,
     }
 
@@ -23,6 +23,7 @@ pub mod us_production {
             Self {
                 date: String::new(),
                 wind_texas: 0,
+                wind_california: 0
             }
         }
     }
@@ -41,7 +42,7 @@ pub mod us_production {
             "Oct" => 10,
             "Nov" => 11,
             "Dec" => 12,
-            _ => 0
+            _ => 0,
         }
     }
 
@@ -60,5 +61,33 @@ pub mod us_production {
                 order: (month + year),
             }
         }
-    } 
+    }
+
+    impl WindRecord {
+        pub fn read_wind_power(path: &str) -> Result<Vec<WindRecord>, Box<dyn std::error::Error>> {
+            let parser = ParserBuilder::new().reader(path).build();
+
+            let mut records: Vec<WindRecord> = vec![];
+
+            for result in parser
+                .reader
+                .expect("Failed to unwrap csv reader ...")
+                .deserialize()
+            {
+                let record: WindRecord = result?;
+                records.push(record);
+            }
+
+            Ok(records)
+        }
+
+        pub fn wind_power_production(path: &str) -> Result<(), Box<dyn std::error::Error>> {
+            if let Err(e) = Self::read_wind_power(path) {
+                eprint!("Error reading csv @ {}", e);
+                Err(e)
+            } else {
+                Ok(())
+            }
+        }
+    }
 }

@@ -3,6 +3,7 @@
 pub mod game_records {
     extern crate csv;
 
+    use crate::parser::ParserBuilder;
     use serde::{Deserialize, Serialize};
     use std::collections::{BTreeMap, HashMap};
 
@@ -45,7 +46,7 @@ pub mod game_records {
                 other_sales: None,
             }
         }
-    }   
+    }
 
     pub trait GameSort {
         fn pub_count(&self, sort_direction: &str) -> BTreeMap<u16, String>;
@@ -69,6 +70,98 @@ pub mod game_records {
 
             println!("{:#?}", as_map);
             as_map
+        }
+    }
+
+    impl GameRecord {
+        pub fn all_game_data(path: &str) -> Result<Vec<GameRecord>, Box<dyn std::error::Error>> {
+            let parser = ParserBuilder::new().reader(path).build();
+
+            let mut records: Vec<GameRecord> = vec![];
+
+            for result in parser
+                .reader
+                .expect("Failed to unwrap csv reader ...")
+                .deserialize()
+            {
+                let record: GameRecord = result?;
+
+                records.push(record);
+            }
+
+            Ok(records)
+        }
+
+        fn read_game_sales(
+            path: &str,
+            total_recs: u16,
+        ) -> Result<BTreeMap<u16, String>, Box<dyn std::error::Error>> {
+            let parser = ParserBuilder::new().reader(path).build();
+
+            let mut publisher_map: HashMap<String, u16> = HashMap::new();
+
+            for result in parser
+                .reader
+                .expect("Failed to unwrap csv reader ...")
+                .deserialize()
+            {
+                let record: GameRecord = result?;
+
+                if let Some(res) = record.publisher {
+                    publisher_map
+                        .entry(res)
+                        .and_modify(|count| *count += 1)
+                        .or_insert(1);
+                }
+
+                if let Some(res) = record.rank {
+                    match res {
+                        x if x == total_recs => break,
+                        _ => continue,
+                    }
+                }
+            }
+
+            let publish_sorted = publisher_map.pub_count("desc");
+
+            Ok(publish_sorted)
+        }
+
+        pub fn game_sales_figures() -> Result<(), Box<dyn std::error::Error>> {
+            let max_records = 100; // Control results length for prototyping
+
+            let vg_sales_path: &str = "./input/vgsales.csv";
+            //
+            if let Err(e) = Self::read_game_sales(vg_sales_path, max_records) {
+                eprint!("Error reading csv @ {}", vg_sales_path);
+                Err(e)
+            } else {
+                Ok(())
+            }
+        }
+
+        pub fn filter_by(param: &str, value: String, records: Vec<GameRecord>) -> Vec<GameRecord> {
+            match param {
+                "year" => records
+                    .into_iter()
+                    .filter(|rec| {
+                        rec.year != None && rec.year.unwrap() == value.parse::<u16>().unwrap()
+                    })
+                    .collect(),
+                "publisher" => records
+                    .into_iter()
+                    .filter(|rec| rec.publisher != None && rec.publisher.clone().unwrap() == value)
+                    .collect(),
+                "platform" => records
+                    .into_iter()
+                    .filter(|rec| rec.platform != None && rec.platform.clone().unwrap() == value)
+                    .collect(),
+                "genre" => records
+                    .into_iter()
+                    .filter(|rec| rec.genre != None && rec.genre.clone().unwrap() == value)
+                    .collect(),
+                _ => records,
+            }
         }
     }
 }

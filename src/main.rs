@@ -2,14 +2,14 @@ mod cli;
 mod parser;
 mod server;
 
-use server::connection::{launch, Server};
+use server::connection;
+
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // let args = parse_args()?;
-    // println!("{:#?}", args);
+    let server_config = connection::Config::new();
 
-    launch(Server::new())?;
+    connection::launch(server_config)?;
 
     Ok(())
 }

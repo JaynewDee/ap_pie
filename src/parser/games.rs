@@ -7,7 +7,7 @@ pub mod game_records {
     use serde::{Deserialize, Serialize};
     use std::collections::{BTreeMap, HashMap};
 
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize, Default)]
     pub struct GameRecord {
         #[serde(rename = "Rank")]
         pub rank: Option<u16>,
@@ -29,23 +29,6 @@ pub mod game_records {
         jp_sales: Option<f32>,
         #[serde(rename = "Other_Sales")]
         other_sales: Option<f32>,
-    }
-
-    impl Default for GameRecord {
-        fn default() -> Self {
-            Self {
-                rank: None,
-                name: None,
-                platform: None,
-                year: None,
-                genre: None,
-                publisher: None,
-                na_sales: None,
-                eu_sales: None,
-                jp_sales: None,
-                other_sales: None,
-            }
-        }
     }
 
     pub trait GameSort {

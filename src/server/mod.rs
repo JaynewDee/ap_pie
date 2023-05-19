@@ -4,12 +4,12 @@ pub mod connection {
     use crate::server::routing::{game_sales, index, wind_production, world_pop};
     use actix_web::{App, HttpServer};
 
-    pub struct Server<'a> {
+    pub struct Config<'a> {
         addr: &'a str,
         port: u16,
     }
 
-    impl<'a> Server<'a> {
+    impl<'a> Config<'a> {
         pub fn new() -> Self {
             Self {
                 addr: "127.0.0.1",
@@ -27,8 +27,8 @@ pub mod connection {
     }
 
     #[tokio::main]
-    pub async fn launch(server: Server) -> std::io::Result<()> {
-        let (addr, port) = (server.address(), server.port());
+    pub async fn launch(config: Config) -> std::io::Result<()> {
+        let (addr, port) = (config.address(), config.port());
 
         println!("Server listening @ http://{}:{} ", &addr, &port);
 

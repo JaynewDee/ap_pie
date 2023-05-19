@@ -5,7 +5,7 @@ pub mod population {
     use serde::{Deserialize, Serialize};
     use std::collections::{BTreeMap, HashMap};
 
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Serialize, Deserialize, Default)]
     pub struct PopRecord {
         #[serde(rename = "Rank")]
         pub rank: Option<u16>,
@@ -15,17 +15,6 @@ pub mod population {
         pub continent: Option<String>,
         #[serde(rename = "Capital")]
         pub capital: Option<String>,
-    }
-
-    impl Default for PopRecord {
-        fn default() -> Self {
-            Self {
-                rank: None,
-                country: None,
-                continent: None,
-                capital: None,
-            }
-        }
     }
 
     pub trait PopulationSort {

@@ -11,23 +11,13 @@ pub mod wind_production {
         order: u16,
     }
 
-    #[derive(Debug, Deserialize, Serialize)]
+    #[derive(Debug, Deserialize, Serialize, Default)]
     pub struct WindRecord {
         pub date: String,
         pub wind_california: u16,
         pub wind_texas: u16,
     }
-
-    impl Default for WindRecord {
-        fn default() -> Self {
-            Self {
-                date: String::new(),
-                wind_texas: 0,
-                wind_california: 0
-            }
-        }
-    }
-
+ 
     fn from_trichar(val: &str) -> u16 {
         match val {
             "Jan" => 1,

@@ -7,6 +7,7 @@ use actix_web::{HttpRequest, Responder};
 use serde::Serialize;
 use std::collections::HashMap;
 
+
 #[derive(Serialize, Debug)]
 struct IndexResponse {
     text: String,
@@ -26,7 +27,6 @@ pub async fn index() -> Result<impl Responder, Box<dyn std::error::Error>> {
 #[get("/games")]
 pub async fn game_sales(req: HttpRequest) -> Result<impl Responder, Box<dyn std::error::Error>> {
     let (key, value) = query_params(req);
-
     let all_records = GameRecord::all_game_data("./input/vgsales.csv")?;
 
     let filtered = GameRecord::filter_by(&key, value, all_records);
@@ -41,7 +41,7 @@ pub async fn wind_production(_: HttpRequest) -> Result<impl Responder, Box<dyn s
     )?))
 }
 
-#[get("/population")]
+#[get("/population")] 
 pub async fn world_pop(_: HttpRequest) -> Result<impl Responder, Box<dyn std::error::Error>> {
     Ok(Json(PopRecord::all_population_data(
         "./input/world-pop.csv",

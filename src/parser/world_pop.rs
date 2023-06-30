@@ -3,7 +3,6 @@ pub mod population {
 
     use crate::parser::ParserBuilder;
     use serde::{Deserialize, Serialize};
-    use std::collections::{BTreeMap, HashMap};
 
     #[derive(Debug, Serialize, Deserialize, Default)]
     pub struct PopRecord {
@@ -15,16 +14,6 @@ pub mod population {
         pub continent: Option<String>,
         #[serde(rename = "Capital")]
         pub capital: Option<String>,
-    }
-
-    pub trait PopulationSort {
-        fn direction(&self, sort_direction: &str) -> BTreeMap<u16, String>;
-    }
-
-    impl PopulationSort for HashMap<String, u16> {
-        fn direction(&self, _direction: &str) -> BTreeMap<u16, String> {
-            todo!()
-        }
     }
 
     impl PopRecord {

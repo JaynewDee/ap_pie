@@ -70,14 +70,5 @@ pub mod wind_production {
 
             Ok(records)
         }
-
-        pub fn wind_power_production(path: &str) -> Result<(), Box<dyn std::error::Error>> {
-            if let Err(e) = Self::read_wind_power(path) {
-                eprint!("Error reading csv @ {}", e);
-                Err(e)
-            } else {
-                Ok(())
-            }
-        }
     }
 }

@@ -27,7 +27,7 @@ impl ParserBuilder {
         self
     }
 
-    fn writer(mut self, path: &str) -> Self {
+    fn _writer(mut self, path: &str) -> Self {
         self.parser.writer = Some(csv::Writer::from_path(path).unwrap());
         self
     }

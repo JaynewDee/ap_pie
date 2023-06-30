@@ -1,4 +1,3 @@
-mod cli;
 mod parser;
 mod server;
 

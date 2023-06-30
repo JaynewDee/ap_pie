@@ -13,6 +13,7 @@ struct IndexResponse {
     text: String,
 }
 
+
 #[get("/")]
 pub async fn index() -> Result<impl Responder, Box<dyn std::error::Error>> {
     let json_res = IndexResponse {

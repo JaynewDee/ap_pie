@@ -1,4 +1,4 @@
-#![allow(unused_variables, dead_code)]
+// #![allow(unused_variables, dead_code)]
 
 pub mod game_records {
     extern crate csv;
@@ -41,18 +41,19 @@ pub mod game_records {
                 acc.push(v);
                 acc
             });
+
             // Mutate in place
             pairs_vec.sort_by(|(_, v1), (_, v2)| v2.cmp(v1));
-            pairs_vec.reverse();
+            if direction == "desc" {
+                pairs_vec.reverse();
+            };
 
-            let as_map: BTreeMap<u16, String> =
+            
                 pairs_vec.iter().fold(BTreeMap::new(), |mut acc, (k, v)| {
                     acc.insert(**v, k.to_string());
                     acc
-                });
+                })
 
-            println!("{:#?}", as_map);
-            as_map
         }
     }
 
@@ -110,7 +111,7 @@ pub mod game_records {
             Ok(publish_sorted)
         }
 
-        pub fn game_sales_figures() -> Result<(), Box<dyn std::error::Error>> {
+        pub fn _game_sales_figures() -> Result<(), Box<dyn std::error::Error>> {
             let max_records = 100; // Control results length for prototyping
 
             let vg_sales_path: &str = "./input/vgsales.csv";
